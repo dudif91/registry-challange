@@ -44,6 +44,14 @@ Build a small but complete frontend application that consumes DockerHub's public
 
 ---
 
+## 🧠 Product Thinking
+
+We expect you to treat this as a real product: think about what a user would need beyond the list above, and tell us what you added and why. Product judgment is part of the evaluation.  
+
+Using AI tools is fine and expected — we care about the decisions behind the result.
+
+---
+
 ## 📦 Deliverables
 
 1. **A working web app:**  
@@ -53,6 +61,7 @@ Build a small but complete frontend application that consumes DockerHub's public
 2. **A short summary document that includes:**  
    - APIs you used and how you discovered them.  
    - Key design decisions.  
+   - Product decisions: what you added or left out from a user's point of view, and why.  
    - Challenges or lessons learned.  
    - What you'd improve with more time.  
 
