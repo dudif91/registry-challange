@@ -77,3 +77,38 @@ Using AI tools is fine and expected — we care about the decisions behind the r
 
 Have fun! For all questions and clarifications – don't hesitate to reach out 🙂  
 Good luck! 🚀
+
+---
+
+# ▶️ Running the app
+
+## Prerequisites
+- Node.js 20 or newer
+- [pnpm](https://pnpm.io) (`corepack enable` or `npm i -g pnpm`)
+- Internet access (the app talks to the live Docker Hub API)
+
+## Commands
+```bash
+pnpm install          # install dependencies
+pnpm dev              # dev server at http://localhost:5173
+pnpm test             # unit + component tests (Vitest, MSW)
+pnpm lint             # oxlint
+pnpm build            # type-check + production build into dist/
+pnpm preview          # serve the production build (http://localhost:4173)
+```
+
+Try: `/` (Explore), `/r/library/nginx`, `/r/fluent/fluent-bit`, and `/r/nope/nope` (404 state).
+
+## Why there is a proxy
+`hub.docker.com` sends no CORS headers (preflight requests return 405), so a browser cannot call it directly. The app only calls same-origin `/hub/*`, and the Vite dev and preview servers forward those requests to `https://hub.docker.com` (see `vite.config.ts`). A real deployment needs an equivalent edge or server proxy (nginx, a Cloudflare Worker, a small Node service). Static hosting alone will not work.
+
+## Project layout
+```
+src/api/         fetch client, typed endpoints, mappers that normalise API quirks
+src/hooks/       TanStack Query hooks + small UI hooks
+src/components/  presentational components
+src/pages/       ExplorePage, RepoDetailsPage, NotFoundPage
+src/utils/       formatting helpers (bytes, relative time, counts, pull command)
+docs/            api-discovery.md (how the endpoints were found)
+SUMMARY.md       design and product write-up
+```
