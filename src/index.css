@@ -126,7 +126,7 @@ a.card:hover { border-color: var(--accent); transform: translateY(-1px); }
 
 /* details page */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.details { display: grid; gap: 20px; padding: 24px 0 48px; }
+.details { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 24px 0 48px; }
 .back { font-size: 0.9rem; text-decoration: none; }
 .details__head { display: grid; gap: 12px; }
 .details__title { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -181,6 +181,7 @@ a.card:hover { border-color: var(--accent); transform: translateY(-1px); }
 .markdown img { max-width: 100%; }
 .markdown pre { overflow-x: auto; padding: 12px; background: var(--bg); border-radius: 8px; }
 .markdown code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
+.markdown a, .markdown code { overflow-wrap: anywhere; }
 .markdown table { border-collapse: collapse; display: block; overflow-x: auto; }
 .markdown th, .markdown td { padding: 6px 10px; border: 1px solid var(--border); }
 
