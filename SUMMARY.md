@@ -27,19 +27,20 @@ Findings that shaped the design:
 - **Tests.** The tests cover the mappers, utilities, API client and both pages, using MSW fixtures taken from real responses. 55 tests in total.
 
 ## 3. Product decisions
-**Added, and why**
-| Feature | Why a user wants it |
-|---|---|
-| Official / Verified badges | Trust signal: the first question about an image is whether it is the real one. |
-| Pull and star counts | Popularity is the main way people choose between similar images. |
-| Architecture chips per tag | Multi-arch support (arm64 and others) is a top reason to look at the tag list. |
-| Tag filter, sort and "Load more" | Popular repos have over 1,000 tags, so a flat list is unusable. |
-| Copyable `docker pull` for the repo and for each tag, with "Copied ✓" feedback | Copying the command is the main action on this page, so it should be quick and confirmed. |
-| Overview tab (rendered `full_description`, no raw HTML) | Usage instructions live in the README text. Rendering it safely keeps users on the page. |
-| Explore filters: "Official images only" and a category dropdown | Browsing without a keyword ("show me official databases") is a common job. The brief says filters aren't required, so these are small additions that use the same endpoint (`official=true`, `categories=<slug>`) and live in the URL. |
-| Shareable URLs, debounced search, result count, "Show more" | Search should feel fast and be linkable. Debouncing also protects the rate limit. |
-| Loading skeletons, error + Retry, empty and 404 states, logo fallback | Network failures and missing data are normal, so each has a clear state. |
-| Responsive layout, dark mode, focus styles, aria labels, skip link, arrow-key tabs, per-page titles | Basic accessibility and usability on phones and with keyboards. Checked with a WCAG contrast calculation (all text and accent pairs are above 4.5:1 in light and dark) and Lighthouse (100 for performance, accessibility, best practices and SEO on the Details page). |
+I started from what someone on this site is actually trying to do: *find the right image, decide whether to trust it, pick a tag, and get the command into a terminal.* The brief's list covers the first and last steps. These are the additions that cover the rest, in order of how much they matter to a user.
+
+**Main additions**
+1. **"Can I trust this image?"** Official and Verified badges, plus star and pull counts, on every card and on the details page. Search results are full of lookalikes, and the first question is whether this is the real one and whether people use it.
+2. **"Which tag do I want?"** Popular repos like nginx have over 1,000 tags, so a flat list is unusable. Tags can be filtered by name, sorted, and loaded in pages. Each tag shows its architectures (arm64 and others), because platform support is a common reason to open the tag list.
+3. **"Get the right command, fast."** A copyable `docker pull` for the repository and one for each tag, with "Copied ✓" feedback so the user knows it worked. Official images drop the `library/` prefix, so the command is the one people expect (`docker pull nginx`, not `docker pull library/nginx`).
+4. **"How do I use it?"** An Overview tab renders the repository's full description (usage and environment variables), safely and without raw HTML, so users don't have to leave for Docker Hub.
+5. **"Show me options without a keyword."** Explore filters: "Official images only" and a category dropdown (for example, official databases). The brief says filters aren't needed, so this is a small addition that uses the same search endpoint.
+6. **Links you can share.** The search, filters and repository are all in the URL, so any view can be bookmarked or sent to a colleague.
+
+**Supporting decisions** (these make the product feel finished)
+- Debounced search, result counts and "Show more", which also protect the rate limit.
+- A clear state for every failure: loading skeletons, error with Retry, empty results, a 404 page and a logo fallback.
+- Responsive layout, dark mode, focus styles, aria labels, a skip link, arrow-key tabs and per-page titles. A WCAG contrast calculation showed every text and accent pair above 4.5:1 in light and dark, and Lighthouse scored 100 for performance, accessibility, best practices and SEO on the Details page.
 
 **Deliberately left out**
 - Login and private repositories: they need auth and would not use the public APIs.
