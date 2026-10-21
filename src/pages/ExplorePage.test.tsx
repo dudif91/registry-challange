@@ -119,4 +119,44 @@ describe('ExplorePage', () => {
     expect(screen.getByLabelText('Search repositories')).toHaveValue('postgres')
     expect(await screen.findByText(/results for “postgres”/)).toBeInTheDocument()
   })
+
+  it('sends the official and category filters and shows a filtered result count', async () => {
+    const seen: URLSearchParams[] = []
+    server.use(
+      http.get(SEARCH, ({ request }) => {
+        seen.push(new URL(request.url).searchParams)
+        return HttpResponse.json(response(3, 25))
+      }),
+    )
+    const user = userEvent.setup()
+    renderWithProviders(<ExplorePage />)
+    await screen.findAllByRole('link')
+
+    await user.click(screen.getByLabelText('Official images only'))
+    await user.selectOptions(screen.getByLabelText('Category'), 'databases-and-storage')
+
+    expect(await screen.findByText('25 repositories')).toBeInTheDocument()
+    const last = seen[seen.length - 1]
+    expect(last.get('official')).toBe('true')
+    expect(last.get('categories')).toBe('databases-and-storage')
+    expect(last.get('query')).toBe('')
+  })
+
+  it('reads filters from the URL and clears them back to the popular list', async () => {
+    server.use(http.get(SEARCH, () => HttpResponse.json(response(3, 3))))
+    const user = userEvent.setup()
+    renderWithProviders(<ExplorePage />, '/?official=1&category=web-servers')
+    expect(screen.getByLabelText('Official images only')).toBeChecked()
+    expect(screen.getByLabelText('Category')).toHaveValue('web-servers')
+    expect(await screen.findByText('3 repositories')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Clear filters' }))
+    expect(await screen.findByText('Popular repositories')).toBeInTheDocument()
+  })
+
+  it('shows a filter-specific empty state', async () => {
+    server.use(http.get(SEARCH, () => HttpResponse.json(response(0))))
+    renderWithProviders(<ExplorePage />, '/?official=1')
+    expect(await screen.findByText('No repositories match these filters')).toBeInTheDocument()
+  })
 })

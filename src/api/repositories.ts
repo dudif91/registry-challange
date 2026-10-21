@@ -15,6 +15,10 @@ export interface SearchParams {
   query: string
   from?: number
   size?: number
+  /** Only Docker Official Images. */
+  official?: boolean
+  /** Category slug, see `categories.ts`. */
+  category?: string
   signal?: AbortSignal
 }
 
@@ -23,6 +27,8 @@ export async function searchRepositories({
   query,
   from = 0,
   size = 20,
+  official,
+  category,
   signal,
 }: SearchParams): Promise<Page<RepoSummary>> {
   const qs = new URLSearchParams({
@@ -33,6 +39,8 @@ export async function searchRepositories({
     sort: 'pull_count',
     order: 'desc',
   })
+  if (official) qs.set('official', 'true')
+  if (category) qs.set('categories', category)
   const raw = await fetchJson<RawSearchResponse>(`/api/search/v3/catalog/search?${qs}`, signal)
   return mapSearchResponse(raw, from, size)
 }

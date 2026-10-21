@@ -36,15 +36,16 @@ Findings that shaped the design:
 | Tag filter, sort and "Load more" | Popular repos have over 1,000 tags, so a flat list is unusable. |
 | Copyable `docker pull` for the repo and for each tag, with "Copied ✓" feedback | Copying the command is the main action on this page, so it should be quick and confirmed. |
 | Overview tab (rendered `full_description`, no raw HTML) | Usage instructions live in the README text. Rendering it safely keeps users on the page. |
+| Explore filters: "Official images only" and a category dropdown | Browsing without a keyword ("show me official databases") is a common job. The brief says filters aren't required, so these are small additions that use the same endpoint (`official=true`, `categories=<slug>`) and live in the URL. |
 | Shareable URLs, debounced search, result count, "Show more" | Search should feel fast and be linkable. Debouncing also protects the rate limit. |
 | Loading skeletons, error + Retry, empty and 404 states, logo fallback | Network failures and missing data are normal, so each has a clear state. |
-| Responsive layout, dark mode, focus styles, aria labels, skip link, per-page titles | Basic accessibility and usability on phones and with keyboards. |
+| Responsive layout, dark mode, focus styles, aria labels, skip link, arrow-key tabs, per-page titles | Basic accessibility and usability on phones and with keyboards. Checked with a WCAG contrast calculation (all text and accent pairs are above 4.5:1 in light and dark) and Lighthouse (100 for performance, accessibility, best practices and SEO on the Details page). |
 
 **Deliberately left out**
 - Login and private repositories: they need auth and would not use the public APIs.
 - Favourites and starring: they need accounts or persistence.
 - Vulnerability scanning and image layers: the data sits behind other APIs and is a separate product area.
-- Filters and sort on Explore: the brief says none are needed.
+- Sort options on Explore: results are always ordered by popularity, which is what the reference page defaults to.
 
 ## 4. Challenges and lessons
 - **CORS.** Found early with `curl`, before writing any UI, which saved a rewrite. The lesson is to probe the API from a browser origin first.
@@ -59,6 +60,5 @@ Findings that shaped the design:
 - End-to-end tests (Playwright) against recorded responses.
 - Per-tag detail from `images[]`: per-architecture sizes and digests.
 - Virtualised lists and infinite scroll for very large tag sets.
-- A colour-contrast audit and a Lighthouse pass.
-- Filters and sort on Explore (category, official only), if the scope allowed.
+- Sort options on Explore, and more filters (verified publishers, architecture).
 - A layers / Dockerfile view, and SSR for SEO.
