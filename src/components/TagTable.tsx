@@ -47,7 +47,7 @@ export function TagTable({ namespace, name, tags }: Props) {
               <td title={new Date(tag.lastUpdated).toLocaleString()}>{formatRelativeTime(tag.lastUpdated) || '—'}</td>
               <td>{tag.sizeBytes > 0 ? formatBytes(tag.sizeBytes) : '—'}</td>
               <td className="table__action">
-                <CopyButton text={pullCommand(namespace, name, tag.name)} ariaLabel={`Copy pull command for tag ${tag.name}`} />
+                <CopyButton text={pullCommand(namespace, name, tag.name)} ariaLabel={`Copy Command for tag ${tag.name}`} />
               </td>
             </tr>
           ))}

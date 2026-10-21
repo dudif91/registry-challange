@@ -36,7 +36,7 @@ describe('RepoDetailsPage', () => {
     const row = (await screen.findByRole('rowheader', { name: '5.1.4' })).closest('tr')!
     expect(within(row).getByText('arm64')).toBeInTheDocument()
     expect(within(row).getByText('28.6 MB')).toBeInTheDocument()
-    expect(within(row).getByRole('button', { name: /Copy pull command for tag 5.1.4/ })).toBeInTheDocument()
+    expect(within(row).getByRole('button', { name: /Copy Command for tag 5.1.4/ })).toBeInTheDocument()
     expect(screen.getByText('2,180 tags')).toBeInTheDocument()
   })
 
@@ -44,7 +44,7 @@ describe('RepoDetailsPage', () => {
     mockRepo()
     const user = userEvent.setup()
     renderPage()
-    await user.click(await screen.findByRole('button', { name: 'Copy pull command for tag 5.1.4' }))
+    await user.click(await screen.findByRole('button', { name: 'Copy Command for tag 5.1.4' }))
     expect(await navigator.clipboard.readText()).toBe('docker pull fluent/fluent-bit:5.1.4')
     expect(await screen.findByText('Copied ✓')).toBeInTheDocument()
   })
@@ -53,7 +53,7 @@ describe('RepoDetailsPage', () => {
     mockRepo()
     const user = userEvent.setup()
     renderPage()
-    const button = await screen.findByRole('button', { name: 'Copy pull command for tag 5.1.4' })
+    const button = await screen.findByRole('button', { name: 'Copy Command for tag 5.1.4' })
     vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'))
     document.execCommand = vi.fn().mockReturnValue(false)
     await user.click(button)
@@ -70,7 +70,7 @@ describe('RepoDetailsPage', () => {
     const user = userEvent.setup()
     renderPage('/r/library/nginx')
     expect(await screen.findByRole('heading', { name: 'nginx' })).toBeInTheDocument()
-    await user.click(await screen.findByRole('button', { name: 'Copy pull command for tag 5.1.4' }))
+    await user.click(await screen.findByRole('button', { name: 'Copy Command for tag 5.1.4' }))
     expect(await navigator.clipboard.readText()).toBe('docker pull nginx:5.1.4')
   })
 
