@@ -160,4 +160,18 @@ describe('RepoDetailsPage', () => {
     expect(await screen.findByRole('heading', { name: 'Fluent Bit' })).toBeInTheDocument()
     expect(screen.getByText('A log processor.')).toBeInTheDocument()
   })
+
+  it('switches tabs with the arrow keys and moves focus', async () => {
+    mockRepo()
+    const user = userEvent.setup()
+    renderPage()
+    const tags = await screen.findByRole('tab', { name: 'Tags' })
+    tags.focus()
+    await user.keyboard('{ArrowRight}')
+    const overview = screen.getByRole('tab', { name: 'Overview' })
+    expect(overview).toHaveAttribute('aria-selected', 'true')
+    expect(overview).toHaveFocus()
+    await user.keyboard('{ArrowLeft}')
+    expect(screen.getByRole('tab', { name: 'Tags' })).toHaveFocus()
+  })
 })

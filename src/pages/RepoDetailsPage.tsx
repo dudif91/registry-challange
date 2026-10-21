@@ -89,6 +89,14 @@ export function RepoDetailsPage() {
             id={`tab-${t}`}
             aria-selected={tab === t}
             aria-controls={`panel-${t}`}
+            tabIndex={tab === t ? 0 : -1}
+            onKeyDown={(e) => {
+              if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+              e.preventDefault()
+              const next = t === 'tags' ? 'overview' : 'tags'
+              setTab(next)
+              document.getElementById(`tab-${next}`)?.focus()
+            }}
             className={`tabs__tab${tab === t ? ' tabs__tab--active' : ''}`}
             onClick={() => setTab(t)}
           >

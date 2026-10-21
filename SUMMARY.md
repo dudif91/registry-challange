@@ -59,6 +59,6 @@ Findings that shaped the design:
 - End-to-end tests (Playwright) against recorded responses.
 - Per-tag detail from `images[]`: per-architecture sizes and digests.
 - Virtualised lists and infinite scroll for very large tag sets.
-- Arrow-key navigation for the tabs, and a colour-contrast audit.
+- A colour-contrast audit and a Lighthouse pass.
 - Filters and sort on Explore (category, official only), if the scope allowed.
 - A layers / Dockerfile view, and SSR for SEO.
