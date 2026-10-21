@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import Markdown from 'react-markdown'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import type { TagOrdering } from '../api/repositories'
@@ -16,6 +15,8 @@ import { formatRelativeTime } from '../utils/formatRelativeTime'
 import { pullCommand } from '../utils/pullCommand'
 
 type Tab = 'tags' | 'overview'
+
+const RepoOverview = lazy(() => import('../components/RepoOverview'))
 
 export function RepoDetailsPage() {
   const { namespace = '', name = '' } = useParams()
@@ -79,13 +80,15 @@ export function RepoDetailsPage() {
         </div>
       </header>
 
-      <div className="tabs" role="tablist">
+      <div className="tabs" role="tablist" aria-label="Repository sections">
         {(['tags', 'overview'] as const).map((t) => (
           <button
             key={t}
             type="button"
             role="tab"
+            id={`tab-${t}`}
             aria-selected={tab === t}
+            aria-controls={`panel-${t}`}
             className={`tabs__tab${tab === t ? ' tabs__tab--active' : ''}`}
             onClick={() => setTab(t)}
           >
@@ -94,17 +97,17 @@ export function RepoDetailsPage() {
         ))}
       </div>
 
-      {tab === 'tags' ? (
-        <TagsSection namespace={r.namespace} name={r.name} />
-      ) : r.fullDescription ? (
-        <div className="markdown">
-          <Markdown components={{ a: ({ node: _n, ...props }) => <a {...props} target="_blank" rel="noreferrer noopener" /> }}>
-            {r.fullDescription}
-          </Markdown>
-        </div>
-      ) : (
-        <EmptyState title="No overview available" />
-      )}
+      <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
+        {tab === 'tags' ? (
+          <TagsSection namespace={r.namespace} name={r.name} />
+        ) : r.fullDescription ? (
+          <Suspense fallback={<div className="skeleton skeleton--table" aria-busy="true" aria-label="Loading overview" />}>
+            <RepoOverview markdown={r.fullDescription} />
+          </Suspense>
+        ) : (
+          <EmptyState title="No overview available" />
+        )}
+      </div>
     </article>
   )
 }

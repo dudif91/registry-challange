@@ -7,8 +7,9 @@ import { RepoDetailsPage } from './pages/RepoDetailsPage'
 export default function App() {
   return (
     <>
+      <a className="skip-link" href="#main">Skip to content</a>
       <Header />
-      <main className="container">
+      <main id="main" className="container">
         <Routes>
           <Route path="/" element={<ExplorePage />} />
           <Route path="/r/:namespace/:name" element={<RepoDetailsPage />} />

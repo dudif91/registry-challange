@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { EmptyState } from '../components/EmptyState'
 import { ErrorState } from '../components/ErrorState'
@@ -16,14 +16,24 @@ export function ExplorePage() {
   const debounced = useDebouncedValue(text.trim())
 
   // URL is the source of truth for the active query; typing updates it after a pause.
+  const lastWritten = useRef(query)
   const setQuery = (q: string) => {
     if (q === query) return
+    lastWritten.current = q
     setParams(q ? { q } : {}, { replace: true })
   }
   useEffect(() => {
     setQuery(debounced)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounced])
+
+  // Browser Back/Forward changes the URL without typing: pull it into the input.
+  useEffect(() => {
+    if (query !== lastWritten.current) {
+      lastWritten.current = query
+      setText(query)
+    }
+  }, [query])
 
   useEffect(() => {
     document.title = query ? `“${query}” – Registry UI` : 'Registry UI'
@@ -36,7 +46,15 @@ export function ExplorePage() {
     <>
       <section className="hero">
         <h1>Explore repositories</h1>
-        <SearchBar value={text} onChange={setText} onSubmit={() => setQuery(text.trim())} />
+        <SearchBar
+          value={text}
+          onChange={setText}
+          onSubmit={() => setQuery(text.trim())}
+          onClear={() => {
+            setText('')
+            setQuery('')
+          }}
+        />
       </section>
 
       {query ? (
@@ -73,7 +91,7 @@ function SearchResults({ query, search }: { query: string; search: ReturnType<ty
 
   return (
     <section aria-labelledby="results-heading">
-      <h2 id="results-heading" className="section-title">
+      <h2 id="results-heading" className="section-title" aria-live="polite">
         {search.data.pages[0].total.toLocaleString()} results for “{query}”
       </h2>
       <RepoGrid repos={repos} />

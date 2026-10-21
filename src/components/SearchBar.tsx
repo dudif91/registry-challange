@@ -4,9 +4,10 @@ interface Props {
   value: string
   onChange: (value: string) => void
   onSubmit: () => void
+  onClear: () => void
 }
 
-export function SearchBar({ value, onChange, onSubmit }: Props) {
+export function SearchBar({ value, onChange, onSubmit, onClear }: Props) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     onSubmit()
@@ -24,7 +25,7 @@ export function SearchBar({ value, onChange, onSubmit }: Props) {
         autoFocus
       />
       {value && (
-        <button type="button" className="search__clear" aria-label="Clear search" onClick={() => onChange('')}>
+        <button type="button" className="search__clear" aria-label="Clear search" onClick={onClear}>
           ×
         </button>
       )}

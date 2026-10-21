@@ -49,6 +49,17 @@ describe('RepoDetailsPage', () => {
     expect(await screen.findByText('Copied ✓')).toBeInTheDocument()
   })
 
+  it('shows "Copy failed" when the clipboard is unavailable', async () => {
+    mockRepo()
+    const user = userEvent.setup()
+    renderPage()
+    const button = await screen.findByRole('button', { name: 'Copy pull command for tag 5.1.4' })
+    vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'))
+    document.execCommand = vi.fn().mockReturnValue(false)
+    await user.click(button)
+    expect(await screen.findByText('Copy failed')).toBeInTheDocument()
+  })
+
   it('omits the namespace in the command for official images', async () => {
     server.use(
       http.get('*/hub/v2/repositories/library/nginx/', () =>
@@ -146,7 +157,7 @@ describe('RepoDetailsPage', () => {
     const user = userEvent.setup()
     renderPage()
     await user.click(await screen.findByRole('tab', { name: 'Overview' }))
-    expect(screen.getByRole('heading', { name: 'Fluent Bit' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Fluent Bit' })).toBeInTheDocument()
     expect(screen.getByText('A log processor.')).toBeInTheDocument()
   })
 })

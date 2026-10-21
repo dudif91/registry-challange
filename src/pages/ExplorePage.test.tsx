@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
+import { useNavigate } from 'react-router-dom'
 import type { RawSearchResponse, RawSearchResult } from '../api/mappers'
 import { server } from '../test/server'
 import { renderWithProviders } from '../test/render'
@@ -88,5 +89,34 @@ describe('ExplorePage', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Show more' }))
     await waitFor(() => expect(screen.getAllByRole('link')).toHaveLength(25))
     expect(screen.queryByRole('button', { name: 'Show more' })).not.toBeInTheDocument()
+  })
+
+  it('clears the search immediately and returns to the popular list', async () => {
+    server.use(http.get(SEARCH, () => HttpResponse.json(response(3))))
+    renderWithProviders(<ExplorePage />, '/?q=redis')
+    await screen.findByText(/results for “redis”/)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Clear search' }))
+
+    expect(screen.getByLabelText('Search repositories')).toHaveValue('')
+    expect(await screen.findByText('Popular repositories')).toBeInTheDocument()
+  })
+
+  it('syncs the input when the URL changes (Back/Forward)', async () => {
+    server.use(http.get(SEARCH, () => HttpResponse.json(response(3))))
+    function GoTo() {
+      const navigate = useNavigate()
+      return <button onClick={() => navigate('/?q=postgres')}>go</button>
+    }
+    renderWithProviders(
+      <>
+        <GoTo />
+        <ExplorePage />
+      </>,
+    )
+    await screen.findAllByRole('link')
+    await userEvent.click(screen.getByRole('button', { name: 'go' }))
+    expect(screen.getByLabelText('Search repositories')).toHaveValue('postgres')
+    expect(await screen.findByText(/results for “postgres”/)).toBeInTheDocument()
   })
 })

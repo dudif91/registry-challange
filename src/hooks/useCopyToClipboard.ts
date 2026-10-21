@@ -22,9 +22,9 @@ async function writeText(text: string): Promise<boolean> {
   }
 }
 
-/** `copy(text)` writes to the clipboard; `copied` is true for `resetMs` afterwards. */
+/** `copy(text)` writes to the clipboard; `copied` / `failed` are true for `resetMs` afterwards. */
 export function useCopyToClipboard(resetMs = 2000) {
-  const [copied, setCopied] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle')
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => () => clearTimeout(timer.current), [])
@@ -32,13 +32,12 @@ export function useCopyToClipboard(resetMs = 2000) {
   const copy = useCallback(
     async (text: string) => {
       const ok = await writeText(text)
-      if (!ok) return
-      setCopied(true)
+      setStatus(ok ? 'copied' : 'failed')
       clearTimeout(timer.current)
-      timer.current = setTimeout(() => setCopied(false), resetMs)
+      timer.current = setTimeout(() => setStatus('idle'), resetMs)
     },
     [resetMs],
   )
 
-  return { copied, copy }
+  return { copied: status === 'copied', failed: status === 'failed', copy }
 }
