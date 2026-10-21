@@ -24,10 +24,12 @@ Findings that shaped the design:
 - **TanStack Query for server state.** It gives caching (5-minute `staleTime`, which is kind to the rate limit), loading and error states, and retries that skip typed API errors such as 404 and 429.
 - **URL as state.** The search query lives in `?q=` and the repository in `/r/:namespace/:name`, so every view can be shared, bookmarked and reloaded.
 - **Typed `ApiError`** with kinds `not_found`, `rate_limited`, `http` and `network`. The UI shows specific messages and a Retry button.
-- **Tests.** The tests cover the mappers, utilities, API client and both pages, using MSW fixtures taken from real responses. 55 tests in total.
+- **Tests.** The tests cover the mappers, utilities, API client and both pages, using MSW fixtures taken from real responses. 59 tests in total.
 
 ## 3. Product decisions
 I started from what someone on this site is actually trying to do: *find the right image, decide whether to trust it, pick a tag, and get the command into a terminal.* The brief's list covers the first and last steps. These are the additions that cover the rest, in order of how much they matter to a user.
+
+**At a glance, added beyond the brief:** trust badges and popularity counts, tag filtering with architectures, a copyable pull command, a usage Overview tab, Explore filters (official only, category), and shareable URLs. Details follow.
 
 **Main additions**
 1. **"Can I trust this image?"** Official and Verified badges, plus star and pull counts, on every card and on the details page. Search results are full of lookalikes, and the first question is whether this is the real one and whether people use it.
